@@ -42,8 +42,11 @@ my $CURRENT_VERSION = "0.1";
 my $PROGRAM_NAME    = $0;
 $PROGRAM_NAME       =~ s|.*/||;
 
-my ($input, $help, $version, $handle);
+my ($input, $separator, $column_order, $help, $version, $handle);
+$separator = "\t";
 GetOptions( 'i|input=s'		=> \$input,
+	    's|sep=s'		=> \$separator,
+	    'o|column-order=s'	=> \$column_order,
             'h|help'		=> \$help,
             'v|version'		=> \$version
           );
@@ -65,15 +68,26 @@ else {
 	open DATA, $input or die $!, "\n";
 	$handle = \*DATA;
 }
+unless ( defined $column_order ) {
+	print "Error: Parameter (-o or --column-order) is not set.\n\n";
+	$boolean = 1;
+}
 if ( $boolean == 1 ) {
 	exit;
 }
 
 while( my $line = <$handle> ) {
         chomp( $line );
+	# Split line by separator variable defined by user
+	my @columns = split $separator, $line;
+	
+	# Reorder column based on user definition
+	#my $new_line = $columns[$column_order];
+	#TODO Figure out the problem to call specific indices
+	my $new_line = join $separator, @columns[$column_order];
 
-        ## Criar script aqui!!!! ##
-
+	# Print a new order
+	print $new_line, "\n";
 }
 
 close $handle;
